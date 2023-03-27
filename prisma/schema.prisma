@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model EFMigrationsHistory {
+  MigrationId    String @id(map: "PK___EFMigrationsHistory") @db.NVarChar(150)
+  ProductVersion String @db.NVarChar(32)
+
+  @@map("__EFMigrationsHistory")
+}
+
+model FILMES {
+  Id            Int       @id(map: "PK_FILMES") @default(autoincrement())
+  Nome          String?   @db.NVarChar(Max)
+  URLPoster     String?   @db.NVarChar(Max)
+  URLCapa       String?   @db.NVarChar(Max)
+  URLTrailer    String?   @db.NVarChar(Max)
+  Diretor       String?   @db.NVarChar(Max)
+  Ano           String?   @db.NVarChar(Max)
+  Resumo        String?   @db.NVarChar(Max)
+  EmCartaz      Boolean
+  EmBreve       Boolean
+  Classificacao String?   @db.NVarChar(Max)
+  Duracao       String?   @db.NVarChar(Max)
+  SESSOES       SESSOES[]
+}
+
+model SESSOES {
+  Id         Int     @id(map: "PK_SESSOES") @default(autoincrement())
+  FilmeId    Int
+  Horario    String? @db.NVarChar(Max)
+  DiasSemana String? @db.NVarChar(Max)
+  Sala       Int
+  Audio      String? @db.NVarChar(Max)
+  Video      String? @db.NVarChar(Max)
+  FILMES     FILMES  @relation(fields: [FilmeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SESSOES_FILMES_FilmeId")
+
+  @@index([FilmeId], map: "IX_SESSOES_FilmeId")
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61E6D4E16A") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model USUARIOS {
+  Id              Int      @id(map: "PK_USUARIOS") @default(autoincrement())
+  Email           String?  @db.NVarChar(Max)
+  Senha           String?  @db.NVarChar(Max)
+  Nome            String?  @db.NVarChar(Max)
+  DataCriacao     DateTime
+  UltimaVezOnline DateTime
+}
